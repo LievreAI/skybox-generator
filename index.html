@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="description" content="Convert a 360° panorama to a cubemap.">
+    <title>Optifine Skybox Generator</title>
+    <style>
+        * {
+            font-family: sans-serif;
+            color: white;
+        }
+
+        #download {
+            color: white;
+            background-color: #39a755;
+            border-radius: 2px;
+            padding: 6px 14px;
+            text-decoration: none;
+        }
+
+        #download:active {
+            position: relative;
+            top: 1px;
+        }
+
+        html {
+            background-color: #262525;
+        }
+
+        body {
+            margin: 1em auto;
+            max-width: 600px;
+        }
+
+        .settings > * {
+            margin-top: 12px;
+            margin-bottom: 12px;
+        }
+
+        #cubemap {
+            width: 600px;
+            height: 400px;
+            position: relative;
+            background: #111111;
+            margin-top: 15px;
+            text-align: center;
+        }
+
+        #generating {
+            position: absolute;
+            top: 50%;
+            left: 30%;
+        }
+    </style>
+</head>
+
+<body>
+<header>
+    <h1>Optifine Sky Generator</h1>
+    <aside>Take an image that's tileable on the x axis and make it your sky</aside>
+</header>
+
+<main>
+    <section>
+        <h2>Upload</h2>
+        <label>Upload a panoramic image: <input id="imageInput" type="file" accept="image/*"></label>
+    </section>
+
+    <section>
+        <h2>Output</h2>
+        <div id="cubemap">
+            <b id="generating" style="visibility:hidden">Generating (this won't take long)</b>
+            <output id="faces"></output>
+        </div>
+        <p>You can save an individual face just by clicking on it!</p>
+        <a id="download" style="visibility:hidden">
+            Save as Image
+        </a>
+    </section>
+</main>
+
+<footer>
+    <p>
+        <small>Original Code by <a href="https://github.com/jaxry">Lucas Crane</a></small><br/>
+        <small>Modified by <a href="https://github.com/orion-tran">Orion Tran</a></small><br/>
+        <small>License <a href="https://github.com/jaxry/panorama-to-cubemap/blob/gh-pages/LICENSE">here</a></small>
+    </p>
+</footer>
+
+<script src="main.js"></script>
+</body>
+</html>
