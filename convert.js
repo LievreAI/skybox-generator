@@ -97,6 +97,17 @@ const orientations = {
   }
 };
 
+function rotate180(image) {
+  const copy = new ImageData(new Uint8ClampedArray(image.data), image.width, image.height);
+  for (let i = copy.data.length - 4; i > 0; i -= 4) {
+    let d = copy.data.length - i;
+    image.data[d] = copy.data[i];
+    image.data[d + 1] = copy.data[i + 1];
+    image.data[d + 2] = copy.data[i + 2];
+    image.data[d + 3] = copy.data[i + 3];
+  }
+}
+
 function renderFace({data: readData, face, maxWidth = Infinity}) {
   const faceWidth = Math.min(maxWidth, readData.width / 4);
   const faceHeight = faceWidth;
@@ -125,6 +136,10 @@ function renderFace({data: readData, face, maxWidth = Infinity}) {
 
       copyPixel(readData.width * lon / Math.PI / 2 - 0.5, readData.height * lat / Math.PI - 0.5, to);
     }
+  }
+
+  if (face === 'top' || face === 'bottom') {
+    rotate180(writeData);
   }
 
   postMessage([writeData, face]);
