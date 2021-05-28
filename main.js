@@ -63,10 +63,10 @@ const dom = {
 dom.imageInput.addEventListener('change', loadImage);
 
 const facePositions = {
-  back: {x: 2, y: 0},
-  front: {x: 1, y: 1},
-  left: {x: 0, y: 1},
-  right: {x: 2, y: 1},
+  front: {x: 2, y: 0},
+  back: {x: 1, y: 1},
+  right: {x: 0, y: 1},
+  left: {x: 2, y: 1},
   top: {x: 1, y: 0},
   bottom: {x: 0, y: 0}
 };
