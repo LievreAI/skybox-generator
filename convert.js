@@ -98,36 +98,44 @@ const orientations = {
 };
 
 function renderFace({data: readData, face, maxWidth = Infinity}) {
-  const faceWidth = Math.min(maxWidth, readData.width / 4);
-  const faceHeight = faceWidth;
+  const faceDimension = Math.min(maxWidth, readData.width / 4);
 
   const cube = {};
   const orientation = orientations[face];
 
-  const writeData = new ImageData(faceWidth, faceHeight);
+  const writeData = new ImageData(faceDimension, faceDimension);
   const copyPixel = copyPixelLanczos(readData, writeData);
 
-  for (let x = 0; x < faceWidth; x++) {
-    for (let y = 0; y < faceHeight; y++) {
-      const to = 4 * (y * faceWidth + x);
+  const done = faceDimension * faceDimension;
+  let counter = 0;
+
+  for (let x = 0; x < faceDimension; x++) {
+    for (let y = 0; y < faceDimension; y++) {
+      const to = 4 * (y * faceDimension + x);
 
       // fill alpha channel
       writeData.data[to + 3] = 255;
 
       // get position on cube face
       // cube is centered at the origin with a side length of 2
-      orientation(cube, (2 * (x + 0.5) / faceWidth - 1), (2 * (y + 0.5) / faceHeight - 1));
+      orientation(cube, (2 * (x + 0.5) / faceDimension - 1), (2 * (y + 0.5) / faceDimension - 1));
 
       // project cube face onto unit sphere by converting cartesian to spherical coordinates
-      const r = Math.sqrt(cube.x*cube.x + cube.y*cube.y + cube.z*cube.z);
+      const r = Math.sqrt(cube.x * cube.x + cube.y * cube.y + cube.z * cube.z);
       const lon = mod(Math.atan2(cube.y, cube.x), 2 * Math.PI);
       const lat = Math.acos(cube.z / r);
 
       copyPixel(readData.width * lon / Math.PI / 2 - 0.5, readData.height * lat / Math.PI - 0.5, to);
+
+      counter++;
+
+      if (counter % (done / 100) === 0) {
+        postMessage([1, counter / done])
+      }
     }
   }
 
-  postMessage([writeData, face]);
+  postMessage([0, writeData, face]);
 }
 
 onmessage = function({data}) {

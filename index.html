@@ -1,8 +1,8 @@
 <!DOCTYPE html>
-<html>
+<html lang="en-US">
 <head>
     <meta charset="utf-8">
-    <meta name="description" content="Convert a 360° panorama to a cubemap.">
+    <meta name="description" content="Convert a 360° panorama to a cubemap skybox.">
     <title>Optifine Skybox Generator</title>
     <style>
         * {
@@ -45,19 +45,14 @@
             margin-top: 15px;
             text-align: center;
         }
-
-        #generating {
-            position: absolute;
-            top: 50%;
-            left: 30%;
-        }
     </style>
 </head>
 
 <body>
+<br/>
 <header>
     <h1>Optifine Sky Generator</h1>
-    <aside>Take an image that's tileable on the x axis and make it your sky</aside>
+    <aside>Take an image that is able to repeat on the x axis and make it your sky</aside>
 </header>
 
 <main>
@@ -69,9 +64,10 @@
     <section>
         <h2>Output</h2>
         <div id="cubemap">
-            <b id="generating" style="visibility:hidden">Generating (this won't take long)</b>
             <output id="faces"></output>
         </div>
+        <br/>
+        <br/>
         <p>You can save an individual face just by clicking on it!</p>
         <a id="download" style="visibility:hidden">
             Save as Image

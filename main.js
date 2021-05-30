@@ -5,26 +5,41 @@ const outputCanvas = document.createElement('canvas');
 const outputCtx = outputCanvas.getContext('2d');
 
 class CubeFace {
-  constructor(faceName) {
+  constructor(faceName, position) {
     this.faceName = faceName;
 
     this.anchor = document.createElement('a');
-    this.anchor.style.position='absolute';
+    this.anchor.style.position = 'absolute';
     this.anchor.title = faceName;
 
     this.img = document.createElement('img');
-
     this.anchor.appendChild(this.img);
-  }
 
-  setPreview(url, x, y) {
-    this.img.src = url;
+    this.percentageCounter = document.createElement('span');
+    this.anchor.appendChild(this.percentageCounter);
+
+    this.x = 200 * position.x;
+    this.y = 200 * position.y;
+
     this.img.style.width = '200px';
     this.img.style.height = '200px';
-    this.anchor.style.left = `${x}px`;
-    this.anchor.style.top = `${y}px`;
+
+    this.anchor.style.left = `${this.x}px`;
+    this.anchor.style.top = `${this.y}px`;
+
     this.anchor.style.width = '200px';
     this.anchor.style.height = '200px';
+  }
+
+  setPercentage(percent) {
+    if (!this.previewSet) this.percentageCounter.innerText = (percent * 100 + "").substr(0, 2) + "%";
+  }
+
+  setPreview(url) {
+    this.img.src = url;
+
+    this.previewSet = true;
+    this.percentageCounter.remove();
   }
 
   setDownload(url, fileExtension) {
@@ -56,7 +71,6 @@ function getDataURL(imgData, extension) {
 const dom = {
   imageInput: document.getElementById('imageInput'),
   faces: document.getElementById('faces'),
-  generating: document.getElementById('generating'),
   download: document.getElementById('download')
 };
 
@@ -102,7 +116,6 @@ let workers = [];
 
 function processImage(data) {
   removeChildren(dom.faces);
-  dom.generating.style.visibility = 'visible';
   dom.download.style.visibility = 'hidden';
 
   for (let worker of workers) {
@@ -115,7 +128,7 @@ function processImage(data) {
 }
 
 function renderFace(data, faceName, position) {
-  const face = new CubeFace(faceName);
+  const face = new CubeFace(faceName, position);
   dom.faces.appendChild(face.anchor);
 
   const options = {
@@ -125,25 +138,27 @@ function renderFace(data, faceName, position) {
 
   const worker = new Worker('convert.js');
 
-  const setDownload = ({data: imageData}) => {
+  const setDownload = (message) => {
+    if (message.data[0] === 1) {
+      face.setPercentage(message.data[1]);
+      return;
+    }
+
+    const imageData = message.data[1];
+
     const extension = 'png';
 
-    const x = 200 * position.x;
-    const y = 200 * position.y;
-
-    getDataURL(imageData[0], extension).then(url => {
+    getDataURL(imageData, extension).then(url => {
       face.setDownload(url, extension);
-      face.setPreview(url, x, y);
+      face.setPreview(url);
     });
 
     // put the image data back into a canvas to stitch together
-    outputCtx.putImageData(imageData[0], position.x * imageData[0].width, position.y * imageData[0].height);
+    outputCtx.putImageData(imageData, position.x * imageData.width, position.y * imageData.height);
 
     finished++;
 
     if (finished === 6) {
-      dom.generating.style.visibility = 'hidden';
-
       new Promise(resolve => {
         outputCanvas.toBlob(blob => resolve(URL.createObjectURL(blob)), mimeType['png'], 0.92);
       }).then(url => {
